@@ -23,9 +23,24 @@ public class AmazonOrderService {
      * @param asin - The ASIN being searched for.
      * @return the Amazon Package with the target ASIN
      */
-    public AmazonPackage findPackageLinear(String asin) {
-        // PARTICIPANTS - Implement a linear search for a package matching the requested ASIN
-        return packages.get(0);
+    public AmazonPackage findPackageLinear(String asin) throws PackageNotFoundException {
+        if (packages.isEmpty()) {
+            throw new PackageNotFoundException();
+        }
+
+        AmazonPackage result = null;
+
+        for (AmazonPackage amazonPackage : packages) {
+            if (asin.equals(amazonPackage.getAsin())) {
+                result = amazonPackage;
+                break;
+            }
+        }
+        if (result == null) {
+            throw new PackageNotFoundException();
+        }
+
+        return result;
     }
 
     /**
@@ -34,8 +49,32 @@ public class AmazonOrderService {
      * @param asin - The ASIN being searched for.
      * @return the Amazon Package with the target ASIN
      */
-    public AmazonPackage findPackageBinary(String asin) {
-        // PARTICIPANTS - Implement a binary search for a package matching the requested ASIN
-        return packages.get(0);
+    public AmazonPackage findPackageBinary(String asin) throws PackageNotFoundException {
+
+        if (packages.isEmpty()) {
+            throw new PackageNotFoundException();
+        }
+
+        int left = 0;
+        int right = packages.size() - 1;
+
+        AmazonPackage result = null;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+
+            AmazonPackage midPackage = packages.get(mid);
+
+            if (asin.equals(midPackage.getAsin())) {
+                result = midPackage;
+                return result;
+
+            } else if (asin.compareTo(midPackage.getAsin()) < 0 ) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        throw new PackageNotFoundException();
     }
 }
